@@ -17,7 +17,7 @@ Note Staq is a multi-user note service with per-note sharing and clearance-based
 
 **Authentication:** call `POST /login`, then click **Authorize** and paste the `access_token`.
 
-**Roles (per note):** `viewer` can list and read · `editor` can also change content ·
+**Roles (per note):** `viewer` can list and read, `editor` can also change content,
 `owner` can also share, reclassify, move, rename and delete. A note always has at least one owner.
 
 **Clearance:** `UNCLASSIFIED` < `CONFIDENTIAL` < `SECRET` < `TOP SECRET`. A user can never read a note
