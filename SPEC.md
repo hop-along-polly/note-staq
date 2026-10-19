@@ -46,19 +46,19 @@ PUT /notes/<note-id>/metadata (Update Notes Sharing, Classification, Location, F
 
 ```sql
 CREATE TYPE clearance_level as ENUM ('UNCLASSIFIED', 'CONFIDENTIAL', 'SECRET', 'TOP SECRET');
-CREATE TYPE role as ENUM ('owner', 'editor', 'viewer')
-CREATE TYPE audit_event as ENUM('File Created', 'File Deleted', 'File Viewed', 'File Moved', 'File Content Modified', 'File Shared', 'User Logged In', 'User Logged Out', 'File Sharing Revoked')
+CREATE TYPE note_role as ENUM ('owner', 'editor', 'viewer');
+CREATE TYPE audit_event as ENUM('File Created', 'File Deleted', 'File Viewed', 'File Moved', 'File Content Modified', 'File Shared', 'User Logged In', 'User Logged Out', 'File Sharing Revoked');
 ```
 
 ```sql
 CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    active BOOLEAN DEFAULT 1,
+    active BOOLEAN NOT NULL DEFAULT TRUE,
     email TEXT NOT NULL UNIQUE,
     password_hash TEXT NOT NULL,
     first_name TEXT NOT NULL,
     last_name TEXT NOT NULL,
-    clearance clearance_level DEFAULT 'UNCLASSIFIED',
+    clearance clearance_level NOT NULL DEFAULT 'UNCLASSIFIED',
     created_at TIMESTAMPTZ DEFAULT now()
 );
 ```
@@ -67,8 +67,8 @@ CREATE TABLE users (
 CREATE TABLE notes (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     filename TEXT NOT NULL,
-    location TEXT NOT NULL,
-    classification clearance_level DEFAULT 'UNCLASSIFIED',
+    location TEXT NOT NULL DEFAULT '',
+    classification clearance_level NOT NULL DEFAULT 'UNCLASSIFIED',
     created_by UUID REFERENCES users(id),
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_by UUID REFERENCES users(id),
@@ -81,10 +81,11 @@ CREATE TABLE notes (
 CREATE TABLE note_permissions (
     note_id UUID REFERENCES notes(id) ON DELETE CASCADE,
     user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    role note_role NOT NULL
+    role note_role NOT NULL,
     granted_by UUID REFERENCES users(id) ON DELETE SET NULL,
-    granted_at TIMESTAMPTZ NOT NULL DEFAULT now()
-)
+    granted_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    PRIMARY KEY (note_id, user_id)
+);
 
 CREATE TABLE audit_log (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
