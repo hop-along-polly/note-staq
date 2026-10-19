@@ -1,25 +1,15 @@
 # Note Staq
 
-
-
-Design Choices
- - Clearance Level assigned to both Users and Notes at the database level.
- - Permissions granted to users at the Note level (not RBAC)
- - Audit Log
-
 ## Write-up
 
-### Things to add
- - Allow permissions to apply to folders and not just individual notes. This way an entire project could have it's own folder and by default everything in it would inherit the same clearance requirements as the folder
- - Allow Groups/Custom Roles. 
- - Add a caching layer to improve performance of listing and fetching notes.
- -  
+The design choices I spent the most time on all related to the data security model used by the application. The 2 choices that took the most consideration were
+ 1. Granting user permissions at the Note level instead of implementing a traditional RBAC system. 
+ 2. Adding in the `clearance_level` TYPE in Postgres and adding columns to the `users` and `notes` tables to ensure users could not access notes they don't have clearance for.
 
+I wanted the application to be secure by default and hard for unintentional data breaches to occur when sharing notes. Originally I thought about using RBAC but I didn't like that an admin could go into any teams folders and notes and make changes. I wanted that to be a very explicitly granted permission.
 
+If I had more time I would like to update the data security model to allow for a clearance level to be set on an entire folder and not individual notes. I would also like to support custom roles/groups so teams could create team specific folders and keep information private without trying to work in the confines of the clearance system.
 
-Build the backend of a note taking service used and shared by multiple small teams. Users need to capture and work with their notes
-
-Deliverables: Runnable REST Service & README.md, a Write up on what you would add, change, or stop doing if there was more time for the assessment.
 
 ## Quick start
 
@@ -83,17 +73,6 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements-dev.txt
 - **Audit log.** Every create, view, edit, move, reclassify, share, revoke, delete, login and logout is written to `audit_log` in the same transaction as the change.
 - **S3.** The bucket blocks public access and objects are encrypted at rest (SSE-S3). Clients never get direct S3 access; content goes through the API only.
 
-## Changes to the schema in SPEC.md
-
-The SQL in the spec was kept as close as possible. These changes were needed for it to run or to meet the requirements:
-
-- Syntax fixes: `BOOLEAN DEFAULT TRUE` instead of `DEFAULT 1`, the missing comma in `note_permissions`, the missing semicolons, and the enum named `note_role` to match the column that uses it.
-- `note_permissions` gets `PRIMARY KEY (note_id, user_id)`, so a user can't have two roles on one note.
-- `NOT NULL` added on `users.active`, `users.clearance`, `notes.classification` and `notes.location` (`''` = root).
-- `users.is_admin`: someone has to create users and assign clearance.
-- `audit_log.note_id` has no foreign key, so the history survives note deletion. A `details JSONB` column records the specifics (e.g. who was shared with, old and new paths), and `occured_at` is spelled `occurred_at`.
-- New `audit_event` value `'File Reclassified'`. Classification changes are the most security-relevant metadata change, and none of the existing events fit.
-- New `revoked_tokens` table, so `/logout` can actually invalidate a stateless JWT.
 
 ## Project layout
 
@@ -110,8 +89,3 @@ db/init/          Postgres schema + triggers
 bruno/            Bruno collection
 tests/            Integration tests
 ```
-
-## Write-up
- - If I had more time I would let permissions apply to folders and not individual notes.
- - I took a while designing RBAC/permission/sharing of notes.
- - 
