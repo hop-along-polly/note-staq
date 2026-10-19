@@ -1,0 +1,25 @@
+meta {
+  name: Delete Note (Bob, Co-Owner)
+  type: http
+  seq: 16
+}
+
+delete {
+  url: {{protocol}}://{{host}}/notes/{{noteId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{bobToken}}
+}
+
+tests {
+  test("status 204", function () {
+    expect(res.status).to.equal(204);
+  });
+}
+
+docs {
+  Owner only. Deletes the metadata, then the S3 object. The audit log keeps the history.
+}

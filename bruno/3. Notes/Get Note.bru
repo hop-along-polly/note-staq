@@ -1,0 +1,29 @@
+meta {
+  name: Get Note
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{protocol}}://{{host}}/notes/{{noteId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{aliceToken}}
+}
+
+tests {
+  test("status 200", function () {
+    expect(res.status).to.equal(200);
+  });
+  test("content comes from S3", function () {
+    expect(res.body.content).to.contain("Mission Brief");
+  });
+}
+
+docs {
+  Permissions and clearance are checked against the metadata before the content is read from S3.
+  404 if you have no access; 403 if it was shared with you but is above your clearance.
+}

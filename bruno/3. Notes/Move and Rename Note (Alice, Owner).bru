@@ -1,0 +1,35 @@
+meta {
+  name: Move and Rename Note (Alice, Owner)
+  type: http
+  seq: 8
+}
+
+put {
+  url: {{protocol}}://{{host}}/notes/{{noteId}}/metadata
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{aliceToken}}
+}
+
+body:json {
+  {
+    "location": "projects/{{runId}}/archive",
+    "filename": "mission-brief-v2.md"
+  }
+}
+
+tests {
+  test("status 200", function () {
+    expect(res.status).to.equal(200);
+  });
+  test("moved", function () {
+    expect(res.body.location).to.contain("/archive");
+  });
+}
+
+docs {
+  Moves the S3 object (copy, commit metadata, delete old key). 409 if a note already exists at the target.
+}

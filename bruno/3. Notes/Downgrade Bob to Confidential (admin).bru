@@ -1,0 +1,28 @@
+meta {
+  name: Downgrade Bob to Confidential (admin)
+  type: http
+  seq: 11
+}
+
+patch {
+  url: {{protocol}}://{{host}}/users
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{adminToken}}
+}
+
+body:json {
+  {
+    "user_id": "{{bobId}}",
+    "clearance": "CONFIDENTIAL"
+  }
+}
+
+tests {
+  test("status 200", function () {
+    expect(res.status).to.equal(200);
+  });
+}

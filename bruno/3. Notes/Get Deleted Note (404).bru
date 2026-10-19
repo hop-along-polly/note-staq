@@ -1,0 +1,21 @@
+meta {
+  name: Get Deleted Note (404)
+  type: http
+  seq: 17
+}
+
+get {
+  url: {{protocol}}://{{host}}/notes/{{noteId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{aliceToken}}
+}
+
+tests {
+  test("status 404", function () {
+    expect(res.status).to.equal(404);
+  });
+}

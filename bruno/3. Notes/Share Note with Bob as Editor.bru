@@ -1,0 +1,37 @@
+meta {
+  name: Share Note with Bob as Editor
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{protocol}}://{{host}}/notes/{{noteId}}/metadata
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{aliceToken}}
+}
+
+body:json {
+  {
+    "grant": [
+      {
+        "email": "{{bobEmail}}",
+        "role": "editor"
+      }
+    ]
+  }
+}
+
+tests {
+  test("status 200", function () {
+    expect(res.status).to.equal(200);
+  });
+}
+
+docs {
+  Owner only. `grant` adds users or changes their role (`owner`, `editor`, `viewer`); `revoke` removes them.
+  Users can be referenced by `email` or `user_id`.
+}

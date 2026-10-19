@@ -1,0 +1,32 @@
+meta {
+  name: Get Note (Bob, Editor)
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{protocol}}://{{host}}/notes/{{noteId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{bobToken}}
+}
+
+script:post-response {
+  bru.setVar("noteEtag", res.headers["etag"]);
+}
+
+tests {
+  test("status 200", function () {
+    expect(res.status).to.equal(200);
+  });
+  test("role is editor", function () {
+    expect(res.body.role).to.equal("editor");
+  });
+}
+
+docs {
+  Bob reads the note and captures its ETag for the If-Match header on the next request.
+}

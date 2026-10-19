@@ -1,0 +1,25 @@
+meta {
+  name: Logout
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{protocol}}://{{host}}/logout
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{scratchToken}}
+}
+
+tests {
+  test("status 204", function () {
+    expect(res.status).to.equal(204);
+  });
+}
+
+docs {
+  Revokes the token used on this request. Any later request using it returns 401.
+}

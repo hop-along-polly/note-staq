@@ -1,0 +1,29 @@
+meta {
+  name: Get Note as Bob after Downgrade (403)
+  type: http
+  seq: 12
+}
+
+get {
+  url: {{protocol}}://{{host}}/notes/{{noteId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{bobToken}}
+}
+
+tests {
+  test("status 403", function () {
+    expect(res.status).to.equal(403);
+  });
+  test("no content leaked", function () {
+    expect(res.body.content).to.equal(undefined);
+  });
+}
+
+docs {
+  Bob still has an editor grant, but the note is SECRET and he now holds CONFIDENTIAL.
+  Clearance is re-read from the database on every request, so this takes effect immediately.
+}

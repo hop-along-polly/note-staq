@@ -1,0 +1,21 @@
+meta {
+  name: Use Revoked Token (401)
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{protocol}}://{{host}}/notes
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{scratchToken}}
+}
+
+tests {
+  test("status 401", function () {
+    expect(res.status).to.equal(401);
+  });
+}

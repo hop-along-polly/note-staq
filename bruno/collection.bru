@@ -1,0 +1,12 @@
+docs {
+  # Note Staq API
+
+  Run the folders in order (or `bru run --env Local` from this folder). Each run uses
+  unique emails and folder paths, so it can be repeated against the same database.
+
+  1. **Auth**: log in as the bootstrap admin, show a failed login, and log out a token.
+  2. **Users**: the admin creates Alice (TOP SECRET) and Bob (SECRET), updates a user,
+     resets a password, then Alice and Bob log in.
+  3. **Notes**: create, list, read, share, edit, move, and delete notes, including the
+     clearance rules (sharing above clearance, and access after a clearance downgrade).
+}

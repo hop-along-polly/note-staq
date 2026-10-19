@@ -1,0 +1,37 @@
+meta {
+  name: List Notes
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{protocol}}://{{host}}/notes?location=projects/{{runId}}&recursive=true&q=brief&limit=50&offset=0
+  body: none
+  auth: bearer
+}
+
+params:query {
+  location: projects/{{runId}}
+  recursive: true
+  q: brief
+  limit: 50
+  offset: 0
+}
+
+auth:bearer {
+  token: {{aliceToken}}
+}
+
+tests {
+  test("status 200", function () {
+    expect(res.status).to.equal(200);
+  });
+  test("finds the note", function () {
+    expect(res.body.length).to.equal(1);
+  });
+}
+
+docs {
+  Lists only notes you have a role on AND are cleared for. All query params are optional:
+  `location` (folder), `recursive` (include subfolders), `q` (filename search), `limit`, `offset`.
+}

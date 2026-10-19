@@ -1,0 +1,33 @@
+meta {
+  name: Update User (admin updates Bob)
+  type: http
+  seq: 3
+}
+
+patch {
+  url: {{protocol}}://{{host}}/users
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{adminToken}}
+}
+
+body:json {
+  {
+    "user_id": "{{bobId}}",
+    "last_name": "Baker"
+  }
+}
+
+tests {
+  test("status 200", function () {
+    expect(res.status).to.equal(200);
+  });
+}
+
+docs {
+  PATCH /users. Without `user_id` you update yourself; anyone can change their own name.
+  Changing email, clearance, active or is_admin, or updating anyone else, requires admin.
+}

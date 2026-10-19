@@ -1,0 +1,28 @@
+meta {
+  name: Login as Bob
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{protocol}}://{{host}}/login
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "{{bobEmail}}",
+    "password": "{{userPassword}}"
+  }
+}
+
+script:post-response {
+  bru.setVar("bobToken", res.body.access_token);
+}
+
+tests {
+  test("status 200", function () {
+    expect(res.status).to.equal(200);
+  });
+}

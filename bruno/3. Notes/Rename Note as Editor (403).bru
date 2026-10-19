@@ -1,0 +1,31 @@
+meta {
+  name: Rename Note as Editor (403)
+  type: http
+  seq: 7
+}
+
+put {
+  url: {{protocol}}://{{host}}/notes/{{noteId}}/metadata
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{bobToken}}
+}
+
+body:json {
+  {
+    "filename": "renamed-by-bob.md"
+  }
+}
+
+tests {
+  test("status 403", function () {
+    expect(res.status).to.equal(403);
+  });
+}
+
+docs {
+  Only owners can change metadata.
+}

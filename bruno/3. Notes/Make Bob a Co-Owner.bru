@@ -1,0 +1,36 @@
+meta {
+  name: Make Bob a Co-Owner
+  type: http
+  seq: 14
+}
+
+put {
+  url: {{protocol}}://{{host}}/notes/{{noteId}}/metadata
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{aliceToken}}
+}
+
+body:json {
+  {
+    "grant": [
+      {
+        "email": "{{bobEmail}}",
+        "role": "owner"
+      }
+    ]
+  }
+}
+
+tests {
+  test("status 200", function () {
+    expect(res.status).to.equal(200);
+  });
+}
+
+docs {
+  Notes can have multiple owners, so nothing waits on the original author.
+}

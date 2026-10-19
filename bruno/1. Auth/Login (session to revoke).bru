@@ -1,0 +1,28 @@
+meta {
+  name: Login (session to revoke)
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{protocol}}://{{host}}/login
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "{{adminEmail}}",
+    "password": "{{adminPassword}}"
+  }
+}
+
+script:post-response {
+  bru.setVar("scratchToken", res.body.access_token);
+}
+
+tests {
+  test("status 200", function () {
+    expect(res.status).to.equal(200);
+  });
+}

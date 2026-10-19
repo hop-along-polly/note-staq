@@ -1,0 +1,31 @@
+meta {
+  name: Update User - Admin Changing Own Clearance (403)
+  type: http
+  seq: 5
+}
+
+patch {
+  url: {{protocol}}://{{host}}/users
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{adminToken}}
+}
+
+body:json {
+  {
+    "clearance": "SECRET"
+  }
+}
+
+tests {
+  test("status 403", function () {
+    expect(res.status).to.equal(403);
+  });
+}
+
+docs {
+  Two-person rule: nobody can change their own clearance, admins included. Another admin must do it.
+}

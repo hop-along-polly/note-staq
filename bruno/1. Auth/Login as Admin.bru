@@ -1,0 +1,43 @@
+meta {
+  name: Login as Admin
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{protocol}}://{{host}}/login
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "{{adminEmail}}",
+    "password": "{{adminPassword}}"
+  }
+}
+
+script:pre-request {
+  bru.setVar("runId", Date.now().toString(36));
+}
+
+script:post-response {
+  bru.setVar("adminToken", res.body.access_token);
+}
+
+tests {
+  test("status 200", function () {
+    expect(res.status).to.equal(200);
+  });
+  test("token has user id and clearance", function () {
+    const claims = JSON.parse(Buffer.from(res.body.access_token.split(".")[1], "base64url").toString());
+    expect(claims.sub).to.equal(res.body.user_id);
+    expect(claims.clearance).to.equal("TOP SECRET");
+  });
+}
+
+docs {
+  POST /login with email + password. Returns a JWT whose claims include the user id (`sub`) and `clearance`.
+  
+  The admin is seeded on first startup from BOOTSTRAP_ADMIN_EMAIL / BOOTSTRAP_ADMIN_PASSWORD.
+}

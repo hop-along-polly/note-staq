@@ -1,0 +1,36 @@
+meta {
+  name: Update Note Content (Bob, Editor)
+  type: http
+  seq: 6
+}
+
+put {
+  url: {{protocol}}://{{host}}/notes/{{noteId}}
+  body: json
+  auth: bearer
+}
+
+headers {
+  If-Match: {{noteEtag}}
+}
+
+auth:bearer {
+  token: {{bobToken}}
+}
+
+body:json {
+  {
+    "content": "# Mission Brief\\n\\nRevised by Bob."
+  }
+}
+
+tests {
+  test("status 200", function () {
+    expect(res.status).to.equal(200);
+  });
+}
+
+docs {
+  Editor or owner. The optional `If-Match` header (the ETag from a GET) rejects the write with 412
+  if someone else saved first.
+}
