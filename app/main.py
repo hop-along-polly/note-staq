@@ -28,16 +28,14 @@ return 404, so their existence isn't revealed.
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    settings = get_settings()
-    app.state.storage = NoteStorage(settings)
-    await app.state.storage.start()
-    async with SessionLocal() as session:
-        await users.ensure_bootstrap_admin(
-            session, settings.bootstrap_admin_email, settings.bootstrap_admin_password
-        )
-    yield
-    await app.state.storage.stop()
-    await engine.dispose()
+  settings = get_settings()
+  app.state.storage = NoteStorage(settings)
+  await app.state.storage.start()
+  async with SessionLocal() as session:
+    await users.ensure_bootstrap_admin(session, settings.bootstrap_admin_email, settings.bootstrap_admin_password)
+  yield
+  await app.state.storage.stop()
+  await engine.dispose()
 
 
 app = FastAPI(title="Note Staq", version="1.0.0", description=DESCRIPTION, lifespan=lifespan)
@@ -53,13 +51,13 @@ _TRIGGER_ERRORS = {"CL001": status.HTTP_403_FORBIDDEN, "CL002": status.HTTP_409_
 
 @app.exception_handler(DBAPIError)
 async def trigger_error_handler(request: Request, exc: DBAPIError):
-    sqlstate = getattr(exc.orig, "sqlstate", None) or getattr(exc.orig, "pgcode", None)
-    if sqlstate in _TRIGGER_ERRORS:
-        message = str(exc.orig).split("\n")[0].split(": ", 1)[-1]
-        return JSONResponse({"detail": message}, status_code=_TRIGGER_ERRORS[sqlstate])
-    raise exc
+  sqlstate = getattr(exc.orig, "sqlstate", None) or getattr(exc.orig, "pgcode", None)
+  if sqlstate in _TRIGGER_ERRORS:
+    message = str(exc.orig).split("\n")[0].split(": ", 1)[-1]
+    return JSONResponse({"detail": message}, status_code=_TRIGGER_ERRORS[sqlstate])
+  raise exc
 
 
 @app.get("/health", tags=["Health"], summary="Liveness check")
 async def health() -> dict:
-    return {"status": "ok"}
+  return {"status": "ok"}
